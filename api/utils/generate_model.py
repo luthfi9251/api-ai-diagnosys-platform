@@ -28,7 +28,7 @@ from sklearn.metrics import accuracy_score, recall_score, confusion_matrix
 
 def generate_model(model, dataset):
     df = None
-    path_to_model = os.path.join(os.getcwd(),"prediction\dataset",f"{dataset['nama_dataset']}.{dataset['format_file']}")
+    path_to_model = os.path.join(os.getcwd(),"api\prediction\dataset",f"{dataset['nama_dataset']}.{dataset['format_file']}")
     df = pd.read_csv(path_to_model)
 
     label_target = dataset["target_label"]

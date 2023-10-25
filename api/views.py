@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import HeartDiseaseModelSerializer, GeneratedModelSerializer, DatasetSerializer, ModelPredictionSerializer
+from .serializers import HeartDiseaseModelSerializer, GeneratedModelSerializer, DatasetSerializer, ModelPredictionSerializer, GeneratedModelSerializerWrite
 from .models import HeartDiseaseDataModel, GeneratedModelPrediction, DatasetModel, ModelPrediction
-from .utils import prediction
+from .utils import prediction, generate_model
 import numpy as np
 
 # Create your views here.
@@ -51,7 +51,7 @@ class HeartDiseaseView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class ModelInformation(APIView):
-    serializer_class = GeneratedModelSerializer
+    serializer_class = GeneratedModelSerializerWrite
 
     def get(self, request, *args, **kwargs):
         id_model = request.query_params.get("id")
@@ -73,7 +73,7 @@ class ModelInformation(APIView):
         return Response({"data": serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
-        serializer = GeneratedModelSerializer(data=request.data)
+        serializer = GeneratedModelSerializerWrite(data=request.data)
         #print(request.data)
         if serializer.is_valid():
             serializer.save()
@@ -95,4 +95,23 @@ class ModelGenerator(APIView):
         }}, status=status.HTTP_200_OK)
         pass
     def post(self, request):
-        pass
+        id_model = request.data["id_model"]
+        id_dataset = request.data["id_dataset"]
+
+        serializer_model = ModelPredictionSerializer(ModelPrediction.objects.get(id_model=id_model))
+        serializer_dataset = DatasetSerializer(DatasetModel.objects.get(id_dataset=id_dataset))
+
+        model_dict = {
+            "model_algorithm": serializer_model.data["model_algorithm"],
+            "parameter":{ **request.data["parameter"] }
+        }
+
+        dataset_dict = {
+            "nama_dataset": serializer_dataset.data["nama_dataset"],
+            "test_size": request.data["test_size"],
+            "target_label": serializer_dataset.data["target_label"],
+            "format_file": serializer_dataset.data["format_file"]
+        }
+
+        return Response({"data": generate_model.generate_model(model_dict,dataset_dict)}, status=status.HTTP_200_OK)
+

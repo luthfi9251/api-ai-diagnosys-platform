@@ -22,3 +22,8 @@ class GeneratedModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeneratedModelPrediction
         fields = "__all__"
+
+class GeneratedModelSerializerWrite(serializers.ModelSerializer):
+    class Meta:
+        model = GeneratedModelPrediction
+        fields = "__all__"

@@ -29,7 +29,7 @@ class HeartDiseaseDataModel(models.Model):
     restecg = models.IntegerField(default=0)
     thalachh = models.IntegerField(default=0)
     exng = models.IntegerField(default=0)
-    oldpeak = models.IntegerField(default=0)
+    oldpeak = models.FloatField(default=0)
     slp = models.IntegerField(default=0)
     caa = models.IntegerField(default=0)
     thall = models.IntegerField(default=0)
@@ -43,6 +43,8 @@ class DatasetModel(models.Model):
     field_count = models.IntegerField(default=0)
     field_list = models.TextField(null=True)
     data_count = models.IntegerField(default=0)
+    format_file = models.CharField(max_length=10,default=".csv")
+    target_label = models.CharField(max_length=20, default="-")
 
 class ModelPrediction(models.Model):
     id_model = models.AutoField(primary_key=True)
